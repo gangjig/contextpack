@@ -84,31 +84,20 @@ points, uses it.
 
 ## Recreate this project from a prompt
 
-> Build a Python package called `contextpack` that assembles LLM
-> context under a hard token budget with explicit, auditable drop
-> policies. An item has a name, text, integer priority, and optional
-> pinned and truncatable flags; items load from a JSON list file with
-> validation and unique names. Packing selects pinned items first
-> (kept verbatim even if they alone exceed the budget, flagged in the
-> output), then the rest by descending priority with input order
-> breaking ties; an item that fits is kept, a truncatable item that
-> doesn't fit is kept as the longest prefix (found by binary search
-> over a pluggable token counter) that fits once a visible
-> "[... truncated]" marker is appended, and anything else over
-> budget is dropped whole. The assembled context renders in the
-> original input order regardless of selection order, and the result
-> carries a manifest — per item: name, kept/truncated/dropped status,
-> original and kept token counts; plus budget, used total, an
-> over-budget flag and status counts — renderable as JSON. The
-> default token counter is a configurable chars-per-token estimate,
-> replaceable by any text-to-int callable. Provide a CLI (pack an
-> items file with --budget, --out, --manifest and --chars-per-token;
-> context to stdout, a summary line to stderr) and a demo that packs
-> a sample context where a pinned system prompt and the task survive,
-> a huge tool result is truncated to land exactly on budget, and old
-> history is dropped. Standard library only, with a pytest suite
-> covering the priority/pinned/truncation semantics, original-order
-> rendering, custom tokenizers, manifest shape, and the CLI.
+> Write a small Python library and CLI, standard library only, that
+> assembles an LLM prompt context under a hard token budget with
+> explicit, auditable decisions about what survives. The caller supplies
+> named items with text and priorities; pinned items are always kept
+> whole, the remaining items are considered by priority, truncatable
+> items may be cut down to fit with a visible marker, and anything else
+> that does not fit is dropped whole, but the assembled context is
+> rendered in the original input order. Every run also produces a
+> manifest recording, per item, whether it was kept, truncated, or
+> dropped and at what token cost, so no content ever disappears
+> silently. Token counting is pluggable, with a simple character-based
+> estimate by default, and a demo shows a pinned system prompt and the
+> task surviving while a huge tool result is truncated to land exactly
+> on budget.
 
 ## Limitations
 
